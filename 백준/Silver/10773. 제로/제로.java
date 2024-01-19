@@ -9,18 +9,17 @@ public class Main {
 		int[] numArr = new int[numCount];
 		for (int i = 0; i < numCount; i++) {
 			numArr[i] = Integer.parseInt(br.readLine());
-			if (numArr[i] == 0) {
-				for (int j = i - 1; j >= 0; j--) {
-					if (numArr[j] != 0) {
-						numArr[j] = 0;
-						break;
-					}
-				}
-			}
 		}
+		int zeroCount = 0;
 		int sum = 0;
-		for (int i = 0; i < numCount; i++) {
-			sum += numArr[i];
+		for (int i = (numCount - 1); i >= 0; i--) {
+			if (zeroCount == 0) {
+				if (numArr[i] == 0) {
+					zeroCount++;
+				} else
+					sum += numArr[i];
+			} else if (numArr[i] == 0) {zeroCount++;}
+			else {zeroCount--;}
 		}
 		System.out.println(sum);
 	}
