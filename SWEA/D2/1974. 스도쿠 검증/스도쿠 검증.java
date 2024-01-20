@@ -57,6 +57,7 @@ public class Solution {
 					}
 					if (r % 3 == 2) {
 						cIncrease++;
+						checkArr3 = new int[9];
 					}
 				}
 			}
