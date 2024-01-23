@@ -1,105 +1,112 @@
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.util.StringTokenizer;
 
 public class Main {
-    static int N;
-    static int[][] map;
-    static int[] dx = {0,1,0,-1};   //토네이토의 x 이동 방향
-    static int[] dy = {-1,0,1,0};   //토네이토의 y 이동 방향
-    static int[] dc = {1,1,2,2};   // 토네이도의 각 방향으로 이동하는 횟수
-    static int[][] dsx = {{-1,1,-2,-1,1,2,-1,1,0}, {-1,-1,0,0,0,0,1,1,2},    //모래가 퍼지는 x방향
-                          {1,-1,2,1,-1,-2,1,-1,0}, {1,1,0,0,0,0,-1,-1,-2}};
-    static int[][] dsy = {{1,1,0,0,0,0,-1,-1,-2},{-1,1,-2,-1,1,2,-1,1,0},    //모래가 퍼지는 y방향
-                          {-1,-1,0,0,0,0,1,1,2},{1,-1,2,1,-1,-2,1,-1,0}};
-    static int[] sandRatio ={1,1,2,7,7,2,10,10,5};
-    public static void main(String[] args) throws IOException{
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-        StringTokenizer st;
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		int size = Integer.parseInt(br.readLine());
+		int[][] map = new int[size][size];
+		int[] rDirection = { 0, 1, 0, -1 };
+		int[] cDirection = { -1, 0, 1, 0 };
+		int sum = 0;
+		for (int r = 0; r < size; r++) {
+			StringTokenizer st = new StringTokenizer(br.readLine());
+			for (int c = 0; c < size; c++) {
+				map[r][c] = Integer.parseInt(st.nextToken());
+				sum += map[r][c];
+			}
+		}
+		System.out.println(sum);
+		int directionIdx = 0;
+		int maxCountSignal = 0;
+		int movedCount = 0;
+		int nowR = size / 2;
+		int nowC = size / 2;
+		int maxMove = 1;
+		int outSand = 0;
+		int[] moveMax = {1, 1, 2, 2};
+		
+		for (int count = 0; count < size * size-1; count++) {
+			nowR += rDirection[directionIdx];
+			nowC += cDirection[directionIdx];
+			int sand = map[nowR][nowC];
+			map[nowR][nowC] = 0;
 
-        N = Integer.parseInt(br.readLine().trim());
-        map = new int[N][N];
+			for (int i = 0; i < 4; i++) {
+				int targetR = nowR + rDirection[i];
+				int targetC = nowC + cDirection[i];
+				if (i == directionIdx) {
+					if (targetR < size && targetR >= 0 && targetC < size && targetC >= 0) {
+						map[targetR][targetC] += sand-((int)(sand*0.01)+(int)(sand*0.01)+(int)(sand*0.07)+(int)(sand*0.07)+(int)(sand*0.02)+(int)(sand*0.02)+(int)(sand*0.1)+(int)(sand*0.1)+(int)(sand*0.05)) ;
+					} else {
+						outSand += (int)(sand * 0.55);
+					}
 
-        for(int r=0; r<N; r++){
-            st = new StringTokenizer(br.readLine()," ");
-            for(int c=0; c<N; c++){
-                map[r][c] = Integer.parseInt(st.nextToken());
-            }
-        }
+					for (int j = 0; j < 4; j++) {
+						if (targetR + rDirection[j] == nowR && targetC + cDirection[j] == nowC) {
+							continue;
+						} else if (j == i){
+							if (targetR + rDirection[j] < size && targetR + rDirection[j] >= 0 && targetC + cDirection[j] < size && targetC + cDirection[j] >= 0) {
+								map[targetR + rDirection[j]][targetC + cDirection[j]] += (int)(sand * 0.05);
+							} else {
+								outSand += (int)(sand * 0.05);
+							}
+						}
+					}
+				} else if (targetR == nowR - rDirection[directionIdx] && targetC == nowC - cDirection[directionIdx]) {
+					continue;
+				} else {
+					if (targetR < size && targetR >= 0 && targetC < size && targetC >= 0) {
+						map[targetR][targetC] += (int)(sand * 0.07);
+					} else {
+						outSand += (int)(sand * 0.07);
+					}
+					for (int j = 0; j < 4; j++) {
+						if (targetR + rDirection[j] == nowR && targetC + rDirection[j] == nowC)
+							continue;
+						else if (rDirection[j] == rDirection[directionIdx]
+								&& cDirection[j] == cDirection[directionIdx]) {
+							if (targetR + rDirection[j] < size && targetR + rDirection[j] >= 0 && targetC + cDirection[j] < size && targetC + cDirection[j] >= 0) {
+								map[targetR + rDirection[j]][targetC + cDirection[j]] += (int)(sand * 0.1);
+							} else {
+								outSand += (int)(sand * 0.1);
+							}
+						} else if (rDirection[j] == rDirection[i] && cDirection[j] == cDirection[i]) {
+							if (targetR + rDirection[j] < size && targetR + rDirection[j] >= 0 && targetC + cDirection[j] < size && targetC + cDirection[j] >= 0) {
+								map[targetR + rDirection[j]][targetC + cDirection[j]] += (int)(sand * 0.02);
+							} else {
+								outSand += (int)(sand * 0.02);
+							}
+						} else {
+							if (targetR + rDirection[j] < size && targetR + rDirection[j] >= 0 && targetC + cDirection[j] < size && targetC + cDirection[j] >= 0) {
+								map[targetR + rDirection[j]][targetC + cDirection[j]] += (int)(sand * 0.01);
+							} else {
+								outSand += (int)(sand * 0.01);
+							}
+						}
+					}
+				}
 
-        int result = calculateOutSand(N/2, N/2);
-        bw.write(String.valueOf(result));
-        bw.flush();
+			}
+			movedCount++;
+			if (maxMove == movedCount) {
+				movedCount = 0;
+				directionIdx++;
+				directionIdx = directionIdx % 4;
+				maxCountSignal++;
+			}
+			if (maxCountSignal == 2 && maxMove < size) {
+				maxMove++;
+				maxCountSignal = 0;
+			}
+		}
+		int remain = 0;
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				remain += map[i][j];
+			}
+		}
+		System.out.println(sum - remain);
 
-
-
-
-    }
-    //현재위치에서 이동 -> 이동한 위치의 모래 뿌리기 -> 이동한위치를 현재위치로 업데이트
-    static int calculateOutSand(int x, int y){
-        int totalOutSand = 0;
-
-        int currentX = x;
-        int currentY = y;
-
-        while (true) {
-            for(int d = 0; d<4; d++){
-                for(int moveCount = 0; moveCount<dc[d]; moveCount++){
-                    //현재위치에서 이동
-                    int nextX = currentX+dx[d];
-                    int nextY = currentY+dy[d];
-
-                    if(nextX<0 || nextY<0 || nextX>=N ||nextY>=N){
-                        return totalOutSand;
-                    }
-
-                    //이동한 위치의 모래 뿌리기
-                    int sand = map[nextX][nextY];
-                    map[nextX][nextY] = 0;
-                    int spreadTotal = 0;
-
-
-                    for(int spread = 0; spread<9; spread++){
-                        int sandX = nextX + dsx[d][spread];
-                        int sandY = nextY + dsy[d][spread];
-                        int spreadAmount = (sand*sandRatio[spread])/100;
-
-                        if(sandX<0 || sandX>=N || sandY<0 || sandY>=N){
-                            totalOutSand += spreadAmount;
-                        }
-                        else{
-                            map[sandX][sandY]+=spreadAmount;
-                        }
-                        spreadTotal+= spreadAmount;
-                    }
-
-                    //알파
-                    int alphaX = nextX+dx[d];
-                    int alphaY = nextY+dy[d];
-                    int alphaAmount = sand -spreadTotal;
-                    if(alphaX<0 || alphaX>=N || alphaY<0|| alphaY>=N){
-                        totalOutSand +=alphaAmount;
-                    }
-                    else{
-                        map[alphaX][alphaY] +=alphaAmount;
-                    }
-
-
-                    //이동한 위치를 현재위치로 업데이트
-                    currentX = nextX;
-                    currentY = nextY;
-                }
-            }
-
-            //횟수 업데이트
-            for(int index = 0; index<4; index++){
-                dc[index] +=2;
-            }
-        }
-    }
+	}
 
 }
