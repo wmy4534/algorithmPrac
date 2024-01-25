@@ -30,9 +30,9 @@ public class Main {
 				base = num;
 				downCount++;
 				upCount++;
-				if (maxCount < Math.max(upCount, downCount))
-					maxCount = Math.max(upCount, downCount);
 			}
+			if (maxCount < Math.max(upCount, downCount))
+				maxCount = Math.max(upCount, downCount);
 		}
 		System.out.println(maxCount);
 	}
