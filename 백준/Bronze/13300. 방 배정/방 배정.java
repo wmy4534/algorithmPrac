@@ -21,9 +21,11 @@ public class Main {
             for (int j = 1; j < 7; j++) {
                 if (students[i][j] > 0) {
                     roomCount++;
-                }
-                if (students[i][j] / (double)roomCapacity > 1.0) {
-                    roomCount += students[i][j]/roomCapacity;
+                    if (students[i][j] / roomCapacity >= 1) {
+                        roomCount += students[i][j]/roomCapacity;
+                    }
+                    if (students[i][j] % roomCapacity == 0)
+                        roomCount--;
                 }
             }
         }
