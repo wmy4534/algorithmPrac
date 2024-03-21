@@ -12,4 +12,4 @@
 
 
 
-> 출처: https://softeer.ai/practice/
+> 출처: https://softeer.ai/practice
