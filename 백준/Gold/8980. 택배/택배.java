@@ -1,8 +1,8 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.StringTokenizer;
 
 public class Main {
@@ -12,49 +12,38 @@ public class Main {
 		int N = Integer.parseInt(st.nextToken()); // 마을 수
 		int C = Integer.parseInt(st.nextToken()); // 트럭 용량
 		int M = Integer.parseInt(br.readLine()); // 보내는 박스 정보의 수
-		List<int[]>[] map = new ArrayList[N + 1];
-		for (int i = 0; i <= N; i++) {
-			map[i] = new ArrayList<>();
-		}
+		int[][] boxes = new int[M][3];
 		for (int i = 0; i < M; i++) {
 			st = new StringTokenizer(br.readLine());
-			int from = Integer.parseInt(st.nextToken()); // 보내는 마을
-			int to = Integer.parseInt(st.nextToken()); // 받는 마을
-			int boxNum = Integer.parseInt(st.nextToken()); // 박스 수
-			map[from].add(new int[] { to, boxNum });
+			boxes[i][0] = Integer.parseInt(st.nextToken()); // 보내는 마을
+			boxes[i][1] = Integer.parseInt(st.nextToken()); // 받는 마을
+			boxes[i][2] = Integer.parseInt(st.nextToken()); // 박스 수
 		}
 
-		int delivered = 0;
-		int capacity = 0;
-		int[] truck = new int[N + 1]; // 배달할 위치의 짐
-		for (int i = 1; i <= N; i++) { // 트럭의 현재 위치
-			delivered += truck[i]; // 배달한 박스 수
-			capacity -= truck[i]; // 트럭에 실린 용량에서 빼준다.
-			truck[i] = 0; // 배달했으므로 0으로 만들어주고
-			// 여기까지는 배달 완료
-			for (int j = 0; j < map[i].size(); j++) { // 짐 싣기
-				int[] box = map[i].get(j); // 어디로 보낼지, 몇 개인지 정보
-				if (capacity + box[1] <= C) {
-					truck[box[0]] += box[1];
-					capacity += box[1];
-				} else {
-					int num = box[1];
-					truck[box[0]] += C - capacity; // 남은 용량만큼 채운다.
-					num -= (C - capacity);
-					capacity = C;
-					for (int k = N; k > box[0]; k--) {
-						if (truck[k] > 0) {
-							truck[box[0]] += Math.min(num, truck[k]);
-							truck[k] -= Math.min(num, truck[k]);
-							num -= Math.min(num, truck[k]);
-							if (num == 0) {
-								break;
-							}
-						}
-					}
-				}
+		Arrays.sort(boxes, new Comparator<int[]>() {
+
+			@Override
+			public int compare(int[] o1, int[] o2) {
+				return (o1[1] == o2[1] ? o1[0] - o2[0] : o1[1] - o2[1]);
+			}
+
+		});
+
+		int[] truck = new int[N + 1];
+		int max, possible, total = 0;
+		for (int i = 0; i < M; i++) {
+			max = 0;
+			for (int j = boxes[i][0]; j < boxes[i][1]; j++) {
+				max = Math.max(max, truck[j]);
+			}
+
+			possible = Math.min(C - max, boxes[i][2]);
+			total += possible;
+			for (int j = boxes[i][0]; j < boxes[i][1]; j++) {
+				truck[j] += possible;
 			}
 		}
-		System.out.println(delivered);
+		
+		System.out.println(total + truck[N]);
 	}
 }
