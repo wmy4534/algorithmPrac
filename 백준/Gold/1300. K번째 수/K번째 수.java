@@ -15,7 +15,7 @@ public class Main {
 	
 	private static long binarySearch() {
 		long lPoint = 1;
-		long rPoint = (long)N*(long)N;
+		long rPoint = k;
 		while (lPoint < rPoint) {
 			long mid = (lPoint + rPoint) / 2;
 			long cnt = findCnt(mid);
