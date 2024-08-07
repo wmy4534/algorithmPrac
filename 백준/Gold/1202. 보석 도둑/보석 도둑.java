@@ -15,8 +15,8 @@ public class Main {
 		int N = Integer.parseInt(st.nextToken());
 		int K = Integer.parseInt(st.nextToken());
 
-		PriorityQueue<int[]> pq = new PriorityQueue<int[]>((e1, e2) -> {
-			return e2[1] - e1[1];
+		PriorityQueue<Integer> pq = new PriorityQueue<>((e1, e2) -> {
+			return e2 - e1;
 		});
 		int[][] jewels = new int[N][2];
 		int[] bags = new int[K];
@@ -44,13 +44,13 @@ public class Main {
 
 			while (index < N) {
 				if (jewels[index][0] <= nowBag) {
-					pq.add(jewels[index++]);
+					pq.add(jewels[index++][1]);
 				} else {
 					break;
 				}
 			}
 			if(!pq.isEmpty()) {
-				result += pq.poll()[1];
+				result += pq.poll();
 			}
 		}
 
