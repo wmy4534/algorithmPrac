@@ -56,16 +56,18 @@ public class Main {
 				answer++;
 			return;
 		}
+		Set<Integer> set = new HashSet<>(visit);
 		for (int i = prev + 1; i < 25; i++) {
 			int r = i / 5;
 			int c = i % 5;
-			Set<Integer> set = new HashSet<>(visit);
-			set.add(5 * r + c);
+			int n = 5 * r + c;
+			set.add(n);
 			if (map[r][c]) {
 				dfs(i, cnt + 1, yCnt, set);
 			} else {
 				dfs(i, cnt + 1, yCnt + 1, set);
 			}
+			set.remove(n);
 		}
 
 	}
