@@ -24,6 +24,8 @@ public class Main {
 	}
 
 	private static void backTracking(int visit, String str) {
+		if (str.length() >= answer)
+			return;
 		if ((visit == (1 << N) - 1)) {
 			answer = Math.min(answer, str.length());
 			return;
@@ -33,6 +35,8 @@ public class Main {
 		for (int i = 0; i < length; i++) {
 			String newStr = str.substring(0, length-i);
 			for (int j = 0; j < N; j++) {
+				if (newStr.length() > strArr[j].length())
+					continue;
 				if ((visited & 1 << j) == 0 && strArr[j].endsWith(newStr)) {
 					visited |= (1 << j);
 					String tmp = strArr[j] + str.substring(length - i);
@@ -41,12 +45,14 @@ public class Main {
 			}
 		}
 		visited = visit;
-		for (int i = 1; i < N; i++) {
+		for (int i = 0; i < length; i++) {
 			String newStr = str.substring(i, length);
 			for (int j = 0; j < N; j++) {
+				if (newStr.length() > strArr[j].length())
+					continue;
 				if((visited & 1 << j) == 0 && strArr[j].startsWith(newStr)) {
 					visited |= (1 << j);
-					String tmp = str.substring(0, length - i) + strArr[j];
+					String tmp = str.substring(0, i) + strArr[j];
 					backTracking(visit | (1 << j), tmp);
 					
 				}
