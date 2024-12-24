@@ -1,62 +1,62 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 public class Main {
 
-	static String[] strArr;
-	static int N;
-	static int answer = Integer.MAX_VALUE;
+    private static final int INF = Integer.MAX_VALUE / 16;
+    private static int N;
+    private static Deque<String> deque;
 
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		N = Integer.parseInt(br.readLine());
-		strArr = new String[N];
-		for (int i = 0; i < N; i++) {
-			strArr[i] = br.readLine();
-		}
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
-		for (int i = 0; i < N; i++) {
-			int visit = 1 << i;
-			String str = strArr[i];
-			backTracking(visit, str);
-		}
-		System.out.println(answer);
-	}
+        input(br);
 
-	private static void backTracking(int visit, String str) {
-		if (str.length() >= answer)
-			return;
-		if ((visit == (1 << N) - 1)) {
-			answer = Math.min(answer, str.length());
-			return;
-		}
-		int visited = visit;
-		int length = str.length();
-		for (int i = 0; i < length; i++) {
-			String newStr = str.substring(0, length-i);
-			for (int j = 0; j < N; j++) {
-				if (newStr.length() > strArr[j].length())
-					continue;
-				if ((visited & 1 << j) == 0 && strArr[j].endsWith(newStr)) {
-					visited |= (1 << j);
-					String tmp = strArr[j] + str.substring(length - i);
-					backTracking(visit | (1 << j), tmp);
-				}
-			}
-		}
-		visited = visit;
-		for (int i = 0; i < length; i++) {
-			String newStr = str.substring(i, length);
-			for (int j = 0; j < N; j++) {
-				if (newStr.length() > strArr[j].length())
-					continue;
-				if((visited & 1 << j) == 0 && strArr[j].startsWith(newStr)) {
-					visited |= (1 << j);
-					String tmp = str.substring(0, i) + strArr[j];
-					backTracking(visit | (1 << j), tmp);
-					
-				}
-			}
-		}
-	}
+        bw.write(String.valueOf(solve()));
+        bw.close();
+    }
+
+    private static int solve() {
+        return DFS("", 0);
+    }
+
+    private static int DFS(String current, int depth) {
+        if (depth == N) {
+            return current.length();
+        }
+
+        int minLen = INF;
+        for (int i = depth; i < N; i++) {
+            String temp = deque.pollFirst();
+            int matchLen = check(current, temp);
+            minLen = Math.min(minLen, DFS(current + temp.substring(matchLen), depth + 1));
+            deque.offerLast(temp);
+        }
+
+        return minLen;
+    }
+
+    private static int check(String a, String b) {
+        int aLen = a.length();
+        int bLen = b.length();
+
+        int min = Math.min(aLen, bLen);
+        for (int i = min; i > 0; i--) {
+            if (a.substring(aLen - i).equals(b.substring(0, i))) {
+                // substring이 모두 일치하면 일치하는 최대 길이 반환
+                return i;
+            }
+        }
+
+        return 0;
+    }
+
+    private static void input(BufferedReader br) throws IOException {
+        N = Integer.parseInt(br.readLine());
+        deque = new LinkedList<>();
+        for (int i = 0; i < N; i++) {
+            deque.offer(br.readLine());
+        }
+    }
 }
