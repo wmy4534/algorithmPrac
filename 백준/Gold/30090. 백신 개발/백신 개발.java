@@ -4,9 +4,9 @@ import java.io.*;
 public class Main {
 
 	static String[] strArr;
-	static int N;
 	static int answer = Integer.MAX_VALUE;
-
+	static int N;
+	
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		N = Integer.parseInt(br.readLine());
@@ -14,49 +14,42 @@ public class Main {
 		for (int i = 0; i < N; i++) {
 			strArr[i] = br.readLine();
 		}
-
+		
 		for (int i = 0; i < N; i++) {
 			int visit = 1 << i;
-			String str = strArr[i];
-			backTracking(visit, str);
+			find(visit, strArr[i]);
 		}
+		
 		System.out.println(answer);
 	}
 
-	private static void backTracking(int visit, String str) {
-		if (str.length() >= answer)
+	private static void find(int visit, String string) {
+		if (string.length() >= answer)
 			return;
-		if ((visit == (1 << N) - 1)) {
-			answer = Math.min(answer, str.length());
+		if (visit == (1 << N) - 1) {
+			answer = string.length();
 			return;
 		}
-		int visited = visit;
-		int length = str.length();
-		for (int i = 0; i < length; i++) {
-			String newStr = str.substring(0, length-i);
-			for (int j = 0; j < N; j++) {
-				if (newStr.length() > strArr[j].length())
-					continue;
-				if ((visited & 1 << j) == 0 && strArr[j].endsWith(newStr)) {
-					visited |= (1 << j);
-					String tmp = strArr[j] + str.substring(length - i);
-					backTracking(visit | (1 << j), tmp);
+		int currentVisit = visit;
+		for (int i = 0; i < N; i++) {
+			if ((currentVisit & 1 << i) == 0) {
+				currentVisit = currentVisit | (1 << i);
+				int length1 = string.length();
+				int length2 = strArr[i].length();
+				for (int k = Math.min(length1, length2); k > 0; k--) {
+					if (string.substring(0, k).equals(strArr[i].substring(length2 - k, length2))) {
+						String newStr = strArr[i].substring(0, length2 - k) + string;
+						find(visit | 1 << i, newStr);
+					}
+					if (string.substring(length1 - k, length1).equals(strArr[i].substring(0, k))) {
+						String newStr = string.substring(0, length1 - k) + strArr[i];
+						find(visit | 1 << i, newStr);
+					}
 				}
 			}
 		}
-		visited = visit;
-		for (int i = 0; i < length; i++) {
-			String newStr = str.substring(i, length);
-			for (int j = 0; j < N; j++) {
-				if (newStr.length() > strArr[j].length())
-					continue;
-				if((visited & 1 << j) == 0 && strArr[j].startsWith(newStr)) {
-					visited |= (1 << j);
-					String tmp = str.substring(0, i) + strArr[j];
-					backTracking(visit | (1 << j), tmp);
-					
-				}
-			}
-		}
+		
 	}
+	
+	
 }
