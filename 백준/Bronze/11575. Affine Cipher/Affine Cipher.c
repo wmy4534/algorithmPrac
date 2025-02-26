@@ -12,10 +12,10 @@ int main(int argc, const char * argv[]) {
         scanf("%s", word);
         int len = (int) strlen(word);
         for (int i = 0; i < len; i++) {
-            int c = word[i] - 'A';
-            c = (a * c + b) % 26;
-            printf("%c", c + 'A');
+            word[i] -= 'A';
+            word[i] = (a * word[i] + b) % 26;
+            word[i] += 'A';
         }
-        printf("\n");
+        printf("%s\n", word);
     }
 }
